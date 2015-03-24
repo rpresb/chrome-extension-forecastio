@@ -3,9 +3,13 @@ var latitude = 0;
 var longitude = 0;
 var lastResult = null;
 
-function getLocation() {
+function getLocation(callback) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
+    }
+
+    if (callback) {
+    	callback();
     }
 }
 
@@ -56,9 +60,9 @@ function showError(error) {
 
 chrome.runtime.onInstalled.addListener(function() {
 	chrome.alarms.create("forecast", {
-       delayInMinutes: 0,
-       periodInMinutes: 10
-   });
+	   delayInMinutes: 0,
+	   periodInMinutes: 10
+	});
 });
 
 chrome.alarms.onAlarm.addListener(function( alarm ) {
@@ -67,6 +71,8 @@ chrome.alarms.onAlarm.addListener(function( alarm ) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.action == "getCurrentForecast") {
-		sendResponse(lastResult);
+		getLocation(function() {
+			sendResponse(lastResult);
+		});
 	}
 });
