@@ -1,4 +1,7 @@
 var APIKEY = '6ee8de3e1a315894761e9006065cffde';
+var latitude = 0;
+var longitude = 0;
+var lastResult = null;
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -7,8 +10,8 @@ function getLocation() {
 }
 
 function showPosition(position) {
-	var latitude = position.coords.latitude;
-	var longitude = position.coords.longitude;
+	latitude = position.coords.latitude;
+	longitude = position.coords.longitude;
 
 	getJSON('https://api.forecast.io/forecast/' + APIKEY + '/' + 
 		latitude + ',' + longitude + '?units=si&lang=pt&exclude=minutely,hourly,daily,alerts,flags', 
@@ -16,8 +19,11 @@ function showPosition(position) {
 			chrome.browserAction.setIcon({
 	            path: "/" + result.currently.icon + ".png"
 	        });
+
+	        lastResult = result;
 		});
 }
+
 
 function getJSON(url, callback) {
 	var x = new XMLHttpRequest();
@@ -48,7 +54,6 @@ function showError(error) {
     }
 }
 
-
 chrome.runtime.onInstalled.addListener(function() {
 	chrome.alarms.create("forecast", {
        delayInMinutes: 0,
@@ -58,4 +63,10 @@ chrome.runtime.onInstalled.addListener(function() {
 
 chrome.alarms.onAlarm.addListener(function( alarm ) {
 	getLocation();
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	if (request.action == "getCurrentForecast") {
+		sendResponse(lastResult);
+	}
 });
