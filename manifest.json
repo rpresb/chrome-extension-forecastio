@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Forecast.io",
+  "description": "Aqui vai a descrição da sua extensão",
+  "version": "1.0",
+  "browser_action": {
+    "default_icon": "clear-day.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "geolocation",
+    "alarms",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+ }
