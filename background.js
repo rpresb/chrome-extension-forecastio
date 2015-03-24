@@ -71,8 +71,12 @@ chrome.alarms.onAlarm.addListener(function( alarm ) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.action == "getCurrentForecast") {
-		getLocation(function() {
+		if (lastResult) {
 			sendResponse(lastResult);
-		});
+		} else {
+			getLocation(function() {
+				sendResponse(lastResult);
+			});
+		}
 	}
 });
